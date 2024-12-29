@@ -22,7 +22,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        docker build -t yuliavironica17/flexidev-frontend:latest -f portal/portal/Dockerfile .
+        docker build -t yuliavironica17/flexidev-frontend:latest -f ~/portal/portal/Dockerfile .
         docker push yuliavironica17/flexidev-frontend
 
     - name: Deploy to Azure App Service
