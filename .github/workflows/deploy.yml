@@ -1,33 +1,37 @@
-name: Deploy to Azure
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Check out the code
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # Step 2: Log in to Docker Hub
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    # Step 3: Build and push Docker image
     - name: Build and push Docker image
       run: |
-        docker build -t yuliavironica17/flexidev-frontend:latest -f ~/portal/portal/Dockerfile .
-        docker push yuliavironica17/flexidev-frontend
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/flexidev-frontend:latest .
+        docker push ${{ secrets.DOCKER_USERNAME }}/flexidev-frontend:latest
 
+    # Step 4: Deploy to Azure App Service
     - name: Deploy to Azure App Service
       uses: azure/webapps-deploy@v2
       with:
-        app-name: flexidev-frontend
-        slot-name: production
-        images: yuliavironica17/flexidev-frontend
+        app-name: "flexidev-frontend"
+        slot-name: "production"
+        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
